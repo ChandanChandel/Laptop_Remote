@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Laptop Remote</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #1a1d24;
+    --accent: #4f8cff;
+    --text: #f2f3f5;
+    --muted: #9aa0ab;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 1.3rem;
+    margin: 8px 0 24px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .section {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .section h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+  .row {
+    display: flex;
+    gap: 12px;
+  }
+  button {
+    flex: 1;
+    padding: 20px 0;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 12px;
+    background: #262a33;
+    color: var(--text);
+    cursor: pointer;
+    transition: transform 0.08s ease, background 0.15s ease;
+  }
+  button:active {
+    transform: scale(0.94);
+    background: var(--accent);
+  }
+  .play-btn {
+    background: var(--accent);
+    font-size: 1.8rem;
+  }
+  .status {
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    height: 16px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <h1>🎮 Laptop Remote</h1>
+
+  <div class="section">
+    <h2>Media</h2>
+    <div class="row">
+      <button onclick="send('prev-track')">⏮</button>
+      <button class="play-btn" onclick="send('play-pause')">⏯</button>
+      <button onclick="send('next-track')">⏭</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Volume</h2>
+    <div class="row">
+      <button onclick="send('volume-down')">🔉 −</button>
+      <button onclick="send('volume-mute')">🔇</button>
+      <button onclick="send('volume-up')">🔊 +</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Brightness</h2>
+    <div class="row">
+      <button onclick="send('brightness-down')">🔅 −</button>
+      <button onclick="send('brightness-up')">🔆 +</button>
+    </div>
+  </div>
+
+  <div class="status" id="status"></div>
+
+<script>
+async function send(action) {
+  const statusEl = document.getElementById('status');
+  try {
+    const res = await fetch('/' + action, { method: 'POST' });
+    const data = await res.json();
+    if (data.status === 'ok') {
+      statusEl.textContent = data.brightness !== undefined
+        ? 'Brightness: ' + data.brightness + '%'
+        : '✓ sent';
+    } else {
+      statusEl.textContent = 'Error: ' + (data.message || 'unknown');
+    }
+  } catch (err) {
+    statusEl.textContent = 'Could not reach laptop — check WiFi';
+  }
+  setTimeout(() => statusEl.textContent = '', 1500);
+}
+</script>
+</body>
+</html>

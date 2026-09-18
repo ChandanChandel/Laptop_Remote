@@ -1,0 +1,3 @@
+Flask==3.0.3
+screen-brightness-control==0.24.1
+pynput==1.7.7
